@@ -1,6 +1,11 @@
 # web-irc-client
 Web-based IRC client
 
+Requires:
+ * PHP 7.1+
+ * composer
+ * npm
+ 
 To build:
 ```
 composer update
