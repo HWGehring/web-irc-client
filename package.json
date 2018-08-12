@@ -1,0 +1,27 @@
+{
+  "name": "irc",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "build": "npx webpack --config webpack.config.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "tether": "^1.4.4",
+    "jquery": "^3.3.1",
+    "bootstrap": "4.0.0-alpha.4",
+    "font-awesome": "^4.7.0",
+    "popper.js": "^1.14.4"
+  },
+  "devDependencies": {
+    "css-loader": "^1.0.0",
+    "extract-text-webpack-plugin": "v4.0.0-beta.0",
+    "file-loader": "^1.1.11",
+    "style-loader": "^0.22.1",
+    "webpack": "^4.16.5",
+    "webpack-cli": "^3.1.0"
+  }
+}
