@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+    <title>{{ title }}</title>
+    <!-- link rel="canonical" href="" -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+</head>
+
+    <body>
+
+
+    <div class="modal fade" id="add-server-modal" tabindex="-1" role="dialog" aria-labelledby="add-server-modal-label" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add new server</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-row mb-3 d-flex align-items-center">
+                            <div class="col">
+                                <input id="add-server-nickname" type="text" class="form-control" placeholder="Nickname">
+                            </div>
+                            <h4>@</h4>
+                            <div class="col-7">
+                                <input id="add-server-hostname" type="text" class="form-control" placeholder="Hostname">
+                            </div>
+                            <h4>:</h4>
+                            <div class="col">
+                                <input id="add-server-port" type="text" class="form-control" placeholder="Port">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col">
+                                <input id="add-server-login-name" type="text" class="form-control" placeholder="Login name">
+                            </div>
+                            <div class="col">
+                                <input id="add-server-real-name" type="text" class="form-control" placeholder="Real name">
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" id="add-server-command" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+        <input class="form-control w-100 red-border base02-color base03-background monospace-font" type="text" placeholder="Search" aria-label="Search">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#configuration-sidebar" aria-hidden="true" aria-expanded="false" aria-controls="configuration-sidebar" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
+
+    <div class="container-fluid viewport">
+        <div class="row fill">
+            <main id="main-block" role="main" class="col-md-9 col-lg-10 px-0">
+                <div id="terminal-canvas" class="row mx-0">
+                    <div id="chat-log" class="col-md-12 px-0 monospace-font align-bottom">
+                        chat<br/>
+                        asdf<br/>
+                        qewr<br/>
+                    </div>
+                </div>
+                <div id="user-input-row" class="row mx-0">
+                    <div class="input-group input-group-sm">
+                        <input type="text" class="user-input-field form-control w-100" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" title="">
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <nav id="configuration-sidebar" class="col-md-2 d-none d-md-block sidebar collapse width base02-background">
+        <!-- TODO -->
+    </nav>
+
+    <nav id="connectivity-sidebar" class="col-md-2 d-none d-md-block sidebar">
+        <div class="sidebar-sticky">
+            <ul id="user-list" class="nav flex-column">
+                <li class="nav-item">
+                    User 1 <span class="sr-only">(current)</span>
+                </li>
+                <li class="nav-item">
+                    User 2
+                </li>
+                <li class="nav-item">
+                    User 3
+                </li>
+            </ul>
+
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                <span>Servers</span>
+                <a class="d-flex align-items-center text-muted" href="#">
+                    <span data-feather="plus-circle" data-toggle="modal" data-target="#add-server-modal"></span>
+                </a>
+            </h6>
+
+            <ul id="server-list" class="nav flex-column"></ul>
+        </div>
+    </nav>
+
+    <script src="//unpkg.com/feather-icons/dist/feather.min.js"></script>
+    <script>feather.replace()</script>
+
+    <script src="//code.jquery.com/jquery-3.3.1.min.js" integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT" crossorigin="anonymous"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="//stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <!-- script src="//cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script -->
+    <!-- script src="../../assets/js/ie10-viewport-bug-workaround.js"></script -->
+    <script src="build/index.js"></script>
+    </body>
+</html>
