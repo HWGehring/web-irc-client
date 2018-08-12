@@ -23,7 +23,11 @@ $container['view'] = function ($container) {
 
 };
 
-$app->get('/home', function (Request $request, Response $response, array $args) {
+$app->get('/', function (Request $request, Response $response, array $args) {
+    exit;
+});
+
+$app->get('/irc', function (Request $request, Response $response, array $args) {
     return $this->view->render($response, 'chat.html.twig');
 });
 
