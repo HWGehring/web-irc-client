@@ -3,7 +3,7 @@ const path = require("path");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
-    entry: ['./ui/app/index.js', './ui/style/index.css'],
+    entry: ['./ui/app/index.js', './ui/style/index.scss'],
     output: {
         filename: 'index.js',
         path: path.resolve(__dirname, 'public/build')
@@ -17,11 +17,12 @@ module.exports = {
                 }]
             },
             {
-                test: /\.css$/,
-                use: ExtractTextPlugin.extract({
-                    fallback: 'style-loader',
-                    use: 'css-loader'
-                })
+                test: /\.scss$/,
+                use: [
+                    "style-loader", // creates style nodes from JS strings
+                    "css-loader", // translates CSS into CommonJS
+                    "sass-loader" // compiles Sass to CSS, using Node Sass by default
+                ]
             }
         ]
     },
