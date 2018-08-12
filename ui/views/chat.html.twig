@@ -1,6 +1,10 @@
 {% extends "base.html.twig" %}
+
 {% set title = 'IRC' %}
+
 {% block body_content %}
+
+    {% include 'add-server-modal.html.twig' %}
 
     <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
         <input class="form-control w-100 red-border base02-color base03-background monospace-font" type="text" placeholder="Search" aria-label="Search">
@@ -104,28 +108,11 @@
             <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
                 <span>Servers</span>
                 <a class="d-flex align-items-center text-muted" href="#">
-                    <span data-feather="plus-circle"></span>
+                    <span data-feather="plus-circle" data-toggle="modal" data-target="#add-server-modal"></span>
                 </a>
             </h6>
 
-            <ul id="server-list" class="nav flex-column">
-                <li class="nav-item">
-                    <span data-feather="circle"></span>
-                    Server 1
-                </li>
-                <li class="nav-item">
-                    <span data-feather="circle"></span>
-                    Server 2
-                </li>
-                <li class="nav-item">
-                    <span data-feather="circle"></span>
-                    Server 3
-                </li>
-                <li class="nav-item">
-                    <span data-feather="circle"></span>
-                    Server 4
-                </li>
-            </ul>
+            <ul id="server-list" class="nav flex-column"></ul>
         </div>
     </nav>
 
