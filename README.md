@@ -1,19 +1,21 @@
 # web-irc-client
 Web-based IRC client
 
-Requires:
- * PHP 7.1+
- * composer
- * npm
+Requires npm
  
 To build:
 ```
-composer update
 npm install
 npm run build
 ```
 
-To run locally:
+To enable SSL place origin certificates in:
 ```
-php -S localhost:8000 -t public/
+<docroot>/env/key.pem
+<docroot>/env/cert.pem
+```
+
+To run:
+```
+npm run start
 ```
