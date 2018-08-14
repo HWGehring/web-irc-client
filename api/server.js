@@ -130,10 +130,10 @@ let certificate = fs.readFileSync( __dirname + '/../env/cert.pem' );
 https.createServer({
     key: privateKey,
     cert: certificate
-}, app).listen(443, function() {
-    console.log('listening on *:443');
+}, app).listen(8443, function() {
+    console.log('listening on *:8443');
 });
 
-http.listen(3000, function() {
-    console.log('listening on *:3000');
+http.listen(8080, function() {
+    console.log('listening on *:8080');
 });
