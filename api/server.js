@@ -1,14 +1,20 @@
 let express = require('express');
 let app = express();
 let path = require("path");
+let https = require('https');
 let http = require('http').Server(app);
 let io = require('socket.io')(http);
+const fs = require('fs');
 
 app.use('/build', express.static(__dirname + '/../public/build'));
 app.use(express.static(__dirname+'/../public'));
 
 app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname+'/../public/index.html'));
+});
+
+app.get('/hello', function(req, res) {
+    return 'world';
 });
 
 app.get('/api/connect', function(req, res) {
@@ -116,6 +122,16 @@ io.on('connection', function(ircClient) {
     ircClient.on('disconnect', function () {
         console.log('A user disconnected');
     });
+});
+
+let privateKey = fs.readFileSync( __dirname + '/../env/key.pem' );
+let certificate = fs.readFileSync( __dirname + '/../env/cert.pem' );
+
+https.createServer({
+    key: privateKey,
+    cert: certificate
+}, app).listen(443, function() {
+    console.log('listening on *:443');
 });
 
 http.listen(3000, function() {
