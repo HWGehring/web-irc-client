@@ -1,37 +1,60 @@
 global.Tether = require('tether');
 global.jQuery = require('jquery');
+global.io = require('socket.io-client');
 
-function userEnteredText(input) {
-    $.post("http://localirc.com/api/echo", { data: input }, function(r) {
-        console.log(r);
-    });
+function sendToChat(message) {
+    message = message.replace(/(?:\r\n|\r|\n)/g, '');
+    $('#chat-log').append(message + '<br>');
 }
 
 function connectToIRCServer(hostname, port, nickname) {
-    let xhr = new XMLHttpRequest();
-    let url = "http://localirc.com/api/stream?hostname=" + hostname + "&port=" + port + "&nickname=" + nickname;
-    console.log("CONNECTING: " + url);
-    xhr.open("GET", url, true);
-    xhr.onprogress = function () {
-        if (typeof xhr.previous_text === 'undefined') {
-            xhr.previous_text = '';
+    let ircServer = io('http://localirc.com:3000', {
+        query: {
+            param1: 'arg1',
+            param2: 'arg2',
+            param3: 'arg3'
         }
-        let result = xhr.responseText.substring(xhr.previous_text.length);
-        result = result.replace(/(?:\r\n|\r|\n)/g, '<br>');
-        $('#chat-log').append(result);
-        xhr.previous_text = xhr.responseText;
-    };
+    });
 
-    xhr.send();
+    ircServer.emit('connection-request', {
+     hostname: hostname,
+     port: port,
+     nickname: nickname
+    });
+
+    let authKey = null;
+    ircServer.on('connection-granted', function(d) {
+        authKey = d.key;
+    });
+
+    ircServer.on('connection-denied', function(d) {
+        sendToChat("Connection denied: " + d.reason);
+    });
+
+    ircServer.on('data-received', function(d) {
+        sendToChat(d.string);
+    });
+
+    ircServer.on('data-sent', function(d) {
+        sendToChat(d.string);
+    });
+
+    return ircServer;
 }
 
-$('.user-input-field').keypress(function(e) {
-    if(e.which == 13) {
-        userEnteredText($(this).val());
-    }
-});
-
 $(document).ready(function() {
+    let ircServer = connectToIRCServer('chat.freenode.net', 6667, 'tow10' + Math.floor((Math.random() * 1000) + 1));
+
+    // send-data
+    $('.user-input-field').keypress(function(e) {
+        if(e.which == 13) {
+            ircServer.emit('send-data', {
+                string: $(this).val()
+            });
+            $(this).val(null);
+        }
+    });
+
     let servers = localStorage.getItem("servers");
     //localStorage.setItem("servers", JSON.stringify([]));
     if (!servers) {
@@ -43,9 +66,23 @@ $(document).ready(function() {
 
     for (let i = 0; i < servers.length; i++) {
         let hostnameVal = servers[i].hostname;
-        $('ul#server-list').prepend('<li class="nav-item d-flex align-items-center"><span data-feather="chevron-right"></span>&nbsp;' + hostnameVal + '</li>');
-        feather.replace();
+        $('ul#server-list').prepend('<li value='+i+' class="server nav-item d-flex align-items-center"><i class="fa fa-plus-square"></i><div class="server-name">&nbsp;' + hostnameVal + '</div><ul class="channels"><li class="channel">#love</li><li class="channel">#towchat</li></ul></li>');
+
     }
+
+    $('ul#server-list > li.server > div.server-name').click(function(e) {
+        $('li.server').each(function(){
+           $(this).removeClass('selected');
+        });
+
+        $(this).parent().addClass('selected');
+    });
+
+    $('ul#server-list > li.server > i').click(function() {
+        $(this).toggleClass('fa-plus-square fa-minus-square');
+        $(this).next('ul').slideToggle('500');
+    });
+
 });
 
 $('#add-server-command').click(function(e) {
@@ -77,10 +114,7 @@ $('#add-server-command').click(function(e) {
 
         localStorage.setItem("servers", JSON.stringify(servers));
 
-        connectToIRCServer(hostnameVal, serverPortVal, nicknameVal);
-
-        $('ul#server-list').prepend('<li class="nav-item d-flex align-items-center"><span data-feather="chevron-right"></span>&nbsp;' + hostnameVal + '</li>');
-        feather.replace();
+        $('ul#server-list').prepend('<li value='+servers.length+' class="nav-item d-flex align-items-center"><i class="fa fa-plus-square"></i>&nbsp;' + hostnameVal + '</li>');
     }
 
     $('#add-server-modal').modal('toggle');

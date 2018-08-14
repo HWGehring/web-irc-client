@@ -1,6 +1,7 @@
 "use strict";
 const webpack = require('webpack');
 const path = require("path");
+const io = require("socket.io-client");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {

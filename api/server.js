@@ -1,47 +1,123 @@
 let express = require('express');
 let app = express();
+let path = require("path");
+let http = require('http').Server(app);
+let io = require('socket.io')(http);
 
-app.get('/', function (req, res) {
-    res.send('Hello World');
+app.use('/build', express.static(__dirname + '/../public/build'));
+app.use(express.static(__dirname+'/../public'));
+
+app.get('/', function(req, res) {
+    res.sendFile(path.join(__dirname+'/../public/index.html'));
 });
 
-/*
- $app->post('/api/echo', function (Request $request, Response $response, array $args) {
- $body = $request->getParsedBody();
- if (!isset($body['data'])) {
- echo 400;
- exit;
- }
+app.get('/api/connect', function(req, res) {
 
- try {
- $db = IRC\DB::instance();
- $stmt = $db->prepare("INSERT INTO relay_queue (payload) VALUES (:payload);");
- $stmt->bindParam('payload', $body['data']);
- $stmt->execute();
- } catch (\Exception $e) {
- echo 500;
- exit;
- }
+});
 
- echo 200;
- exit;
- });
+// Whenever someone connects this gets executed
+io.on('connection', function(ircClient) {
+    let parameters = ircClient.handshake.query;
+    /* {
+        param1: 'arg1',
+        param2: 'arg2',
+        param3: 'arg3'
+     } */
 
- $app->get('/api/stream', function (Request $request, Response $response, array $args) {
- $params = $request->getQueryParams();
- if (!isset($params['hostname'])) exit;
- if (!isset($params['port'])) exit;
- if (!isset($params['nickname'])) exit;
+    ircClient.on('connection-request', function(d) {
+        let hostname = d.hostname;
+        let port = d.port;
+        let nickname = d.nickname;
 
- $client = new IRC\Client($params['hostname'], $params['port'], $params['nickname']);
- $client->stream();
- exit;
- });
- */
+        // TODO: AUTHENTICATE W/USER
+        let authenticated = true;
 
-let server = app.listen(8081, function () {
-    let host = server.address().address;
-    let port = server.address().port;
+        if (authenticated) {
+            ircClient.emit('connection-granted', {
+                key: '1234'
+            })
+        } else {
+            ircClient.emit('connection-denied', {
+                reason: 'could not authenticate'
+            })
+        }
 
-    console.log("Example app listening at http://%s:%s", host, port)
+        let ircServer = require('net').Socket();
+        ircServer.connect(port, hostname);
+
+        let request = "USER " + nickname + " . . :real name\r\n";
+        ircServer.write(request);
+        ircClient.emit('data-sent', {
+            string: request
+        });
+
+        request = "NICK " + nickname + "\r\n";
+        ircServer.write(request);
+        ircClient.emit('data-sent', {
+            string: request
+        });
+
+        let dataBuffer = '';
+        ircServer.on('data', function(d) {
+            let data = null;
+            if (dataBuffer !== '') {
+                data = dataBuffer + d.toString();
+                dataBuffer = '';
+            } else {
+                data = d.toString();
+            }
+
+            if (/\r\n/.test(data)) {
+                let messages = [];
+
+                let parts = data.split("\r\n");
+                for (let i = 0;i < parts.length; i++) {
+                    if (i+1 in parts) {
+                        messages.push(parts[i]);
+                    } else if (parts[i] !== "") {
+                        dataBuffer += parts[i];
+                    }
+                }
+
+                for (let i = 0;i < messages.length; i++) {
+                    if (/^PING :.*$/.test(messages[i])) {
+                        let handshake = /^PING :(.*)$/.exec(messages[i])[1].replace(/(?:\r\n|\r|\n)/g, '');
+                        request = "PONG :"+handshake+"\r\n";
+                        ircServer.write(request);
+                        ircClient.emit('data-sent', {
+                            string: request
+                        })
+                    }
+
+                    ircClient.emit('data-received', {
+                        data: messages[i],
+                        string: messages[i]
+                    });
+                }
+            } else {
+                dataBuffer += data;
+            }
+        });
+
+        ircClient.on('send-data', function(d) {
+
+            // TODO: AUTHENTICATE W/USER
+
+            let request = d.string.replace(/(?:\r\n|\r|\n)/g, '') + "\r\n";
+            console.log(request);
+            ircServer.write(request);
+        });
+
+        ircClient.on('disconnect', function() {
+            ircServer.end();
+        })
+    });
+
+    ircClient.on('disconnect', function () {
+        console.log('A user disconnected');
+    });
+});
+
+http.listen(3000, function() {
+    console.log('listening on *:3000');
 });
